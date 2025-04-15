@@ -1,0 +1,12 @@
+#!/bin/bash
+
+kinit -r 999h -l 999h -f
+which aklog && aklog
+while true
+do
+	kinit -R -r 999h -l 999h -f
+	which aklog && aklog
+	klist
+	which tokens && tokens
+	sleepy 3h
+done 2> >(sed $'s,.*,\e[31m&\e[m,'>&2)
