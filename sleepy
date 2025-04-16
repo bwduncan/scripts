@@ -1,0 +1,52 @@
+#!/usr/bin/python3
+
+"""A utility for sleeping, usually in scripts, with a nice countdown."""
+
+import sys
+from time import sleep
+from datetime import timedelta, datetime
+from contextlib import contextmanager, suppress
+
+
+@contextmanager
+def hide_cursor():
+    print("\033[?25l", end="")
+    try:
+        yield
+    finally:
+        print("\033[?25h", end="")
+
+
+def countdown(time, delta=1):
+    expiry = datetime.now() + time
+    # We don't want a cursor, or a backtrace if the user presses Ctrl-C
+    with hide_cursor(), suppress(KeyboardInterrupt):
+        while datetime.now() < expiry:
+            time = expiry - datetime.now()
+            # Remove fractional seconds for pretty printing
+            time -= timedelta(microseconds=time.microseconds)
+            print(f"{time}\033[0K\r", end="")
+            sleep(delta)
+    # If interrupted, make sure we get a newline, like the original sleep does.
+    if datetime.now() < expiry:
+        print()
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: sleepy {number[|s|m|h|d]}")
+        sys.exit(1)
+    if sys.argv[1].endswith("d"):
+        countdown(timedelta(days=float(sys.argv[1][:-1])))
+    elif sys.argv[1].endswith("h"):
+        countdown(timedelta(hours=float(sys.argv[1][:-1])))
+    elif sys.argv[1].endswith("m"):
+        countdown(timedelta(minutes=float(sys.argv[1][:-1])))
+    elif sys.argv[1].endswith("s"):
+        countdown(timedelta(seconds=float(sys.argv[1][:-1])))
+    else:
+        countdown(timedelta(seconds=float(sys.argv[1])))
+
+
+if __name__ == "__main__":
+    main()
