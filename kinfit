@@ -7,17 +7,17 @@ set -e
 # failures were due to network errors rather than ticket expiry
 kinit -r 999h -l 999h -f
 # Get AFS tokens, if available
-which aklog && aklog
+which aklog >/dev/null && aklog
 while true
 do
 	# Renew ticket (also renewable, forwardable), or bail out (set -e)
 	# TODO would be better to be able to ignore transient network errors.
 	kinit -R -r 999h -l 999h -f
 	# Refresh AFS tokens, if possible
-	which aklog && aklog
+	which aklog >/dev/null && aklog
 	# Display ticket cache and AFS token cache
 	klist
-	which tokens && tokens
+	which tokens >/dev/null && tokens
 	# Wait a reasonable time before renewing again
 	sleepy 3h
 # stderr in red
