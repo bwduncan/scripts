@@ -27,6 +27,10 @@ def countdown(time, delta=1):
             time -= timedelta(microseconds=time.microseconds)
             print(f"{time}\033[0K\r", end="")
             sleep(delta)
+        # Normally a prompt will overwrite the last time ("0:00:00"), but if
+        # the next script prints a short line of numbers, it could appear
+        # confusing, so wipe it.
+        print(f"{' '*7}", end="")
     # If interrupted, make sure we get a newline, like the original sleep does.
     if datetime.now() < expiry:
         print()
